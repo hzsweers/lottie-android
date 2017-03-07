@@ -15,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -24,7 +25,6 @@ import android.widget.ImageView;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.Map;
 
 import static android.support.v4.view.ViewCompat.LAYER_TYPE_SOFTWARE;
@@ -57,9 +57,9 @@ public final class LottieViewDelegate {
     Strong
   }
 
-  private static final Map<String, LottieComposition> strongRefCache = new HashMap<>();
+  private static final Map<String, LottieComposition> strongRefCache = new ArrayMap<>();
   private static final Map<String, WeakReference<LottieComposition>> weakRefCache =
-      new HashMap<>();
+      new ArrayMap<>();
 
   private final OnCompositionLoadedListener loadedListener =
       new OnCompositionLoadedListener() {
