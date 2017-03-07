@@ -5,7 +5,6 @@ import android.animation.ValueAnimator;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.Settings;
@@ -13,7 +12,6 @@ import android.support.annotation.CheckResult;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
@@ -28,6 +26,7 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 
 import static android.support.v4.view.ViewCompat.LAYER_TYPE_SOFTWARE;
+import static java.security.AccessController.getContext;
 
 /**
  * This delegate will load, deserialize, and display an After Effects animation exported with
@@ -206,10 +205,7 @@ public final class LottieViewDelegate {
     recycleBitmaps();
   }
 
-  @UiThread @VisibleForTesting void recycleBitmaps() {
-    if (Looper.myLooper() != Looper.getMainLooper()) {
-      throw new IllegalStateException("This must be called from the main thread.");
-    }
+  @VisibleForTesting void recycleBitmaps() {
     lottieDrawable.recycleBitmaps();
   }
 
@@ -300,6 +296,20 @@ public final class LottieViewDelegate {
       // We can avoid re-setting the drawable, and invalidating the view, since the composition
       // hasn't changed.
       return;
+    }
+
+    int screenWidth = Utils.getScreenWidth(getContext());
+    int screenHeight = Utils.getScreenHeight(getContext());
+    int compWidth = composition.getBounds().width();
+    int compHeight = composition.getBounds().height();
+    if (compWidth > screenWidth ||
+        compHeight > screenHeight) {
+      float xScale = screenWidth / (float) compWidth;
+      float yScale = screenHeight / (float) compHeight;
+      setScale(Math.min(xScale, yScale));
+      Log.w(L.TAG, String.format(
+          "Composition larger than the screen %dx%d vs %dx%d. Scaling down.",
+          compWidth, compHeight, screenWidth, screenHeight));
     }
 
     // If you set a different composition on the view, the bounds will not update unless
