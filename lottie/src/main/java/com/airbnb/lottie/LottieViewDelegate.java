@@ -298,8 +298,8 @@ public final class LottieViewDelegate {
       return;
     }
 
-    int screenWidth = Utils.getScreenWidth(getContext());
-    int screenHeight = Utils.getScreenHeight(getContext());
+    int screenWidth = Utils.getScreenWidth(targetImageView.getContext());
+    int screenHeight = Utils.getScreenHeight(targetImageView.getContext());
     int compWidth = composition.getBounds().width();
     int compHeight = composition.getBounds().height();
     if (compWidth > screenWidth ||
